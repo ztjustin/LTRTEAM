@@ -1,0 +1,1080 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+  <head>
+    <meta charset="utf-8"/>
+
+	<title>LTR Application - Networking</title>
+	<link rel="shortcut icon" type="image/png" th:href="@{/imgs/favicon.ico}"/>
+	<!-- Required meta tags -->
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<!-- Bootstrap CSS -->
+	<link rel="stylesheet" th:href="@{/css/bootstrap/bootstrap.min.css}"/>
+	<link rel="stylesheet" th:href="@{/css/style.css}"/>
+	
+	<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+	
+	<link rel="stylesheet" th:href="@{/css/bootstrap/jquery.dataTables.min.css}"/>
+	<link rel="stylesheet" th:href="@{/css/bootstrap/dataTables.bootstrap4.min.css}"/>
+
+</head>
+
+<body>
+		
+			<!-- Start of Row 1  -->
+			<div class="row">
+			
+			  <div class="col-sm-12">
+					<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+					  <a class="navbar-brand" href="#" th:href="@{/admin/index}">LTR</a>
+					  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+					    <span class="navbar-toggler-icon"></span>
+					  </button>
+					  <div class="collapse navbar-collapse" id="navbarNav">
+					    <ul class="navbar-nav">
+				          <li class="nav-item dropdown">
+				            <a class="nav-link dropdown-toggle" href="http://example.com" id="dropdown03" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Account</a>
+				            <div class="dropdown-menu" aria-labelledby="dropdown03">
+				              <a class="dropdown-item" th:href="@{/admin/changePassword}">Change Password</a>
+				            </div>
+				          </li>						    
+					      <li sec:authorize="hasRole('ROLE_INVENTORY')" class="nav-item">
+					        <a class="nav-link" href="#" th:href="@{/admin/requestSiliconbyUsers}">Request Silicon</a>
+					      </li>
+					      <li class="nav-item active">
+					        <a class="nav-link" href="#" th:href="@{/admin/silicon}">Silicons<span class="sr-only">(current)</span></a>
+					      </li>	
+					      <li class="nav-item">
+					        <a class="nav-link" href="#" th:href="@{/admin/hosts}">Hosts<span class="sr-only">(current)</span></a>
+					      </li>
+					      <li class="nav-item">
+					        <a class="nav-link" href="#" th:href="@{/admin/kvms}">KVM's<span class="sr-only">(current)</span></a>
+					      </li>
+					      <li class="nav-item">
+					        <a class="nav-link" href="#" th:href="@{/admin/pdus}">PDU's<span class="sr-only">(current)</span></a>
+					      </li>						      			      
+					    </ul>
+					  </div>
+					  <div class="navbar-nav">
+				      		<a class="nav-item nav-link" href="#">Logout</a>
+				      </div>
+					</nav>
+			  </div>
+			</div>
+			
+			<!-- End of Row 1  -->
+			
+			<br/>
+			
+			<!-- Start of Row 2  -->
+			<div class="row">
+
+			  <div class="col-sm-12">
+				<div class="card text-center">
+				  <div class="card-header">
+				    
+				  </div>
+				  <div class="card-body">
+				  	<h1>Long Term Retention (LTR)</h1>
+				    <span sec:authentication="name"></span>
+				  </div>
+				  
+				</div>
+			  </div>
+			  			
+			</div>
+			<!-- End of Row 2  -->
+			
+			<br/>
+			
+			<!-- start row 2.5 -->
+			<div class="row">
+			    <div class="col-md-12">
+			    
+					<!-- Nav tabs -->
+					<ul class="nav nav-tabs">
+					  <li class="nav-item">
+					    <a class="nav-link" th:if="${platform != null}" th:href="@{/admin/step1/__${platform.platformId}__}">Step 1(Information)</a>
+					  </li>
+					  <li class="nav-item">
+					    <a class="nav-link" th:if="${platform != null}" th:href="@{/admin/step2/__${platform.platformId}__}">Step 2(Silicons)</a>
+					  </li>
+					  <li class="nav-item">
+					    <a class="nav-link" th:if="${platform != null}" th:href="@{/admin/step3/__${platform.platformId}__}">Step 3(DevicesAndComponents)</a>
+					  </li>
+					  <li class="nav-item">
+					    <a class="nav-link" th:if="${platform != null}" th:href="@{/admin/step4/__${platform.platformId}__}">Step 4(BKCAndSoftware)</a>
+					  </li>
+					  <li class="nav-item">
+					    <a class="nav-link active" th:if="${platform != null}" th:href="@{/admin/step5/__${platform.platformId}__}">Step 5(Networking)</a>
+					  </li>					  
+					</ul>
+					
+					<!-- Tab panes -->
+					<div class="tab-content">
+					  
+					  
+					  <div class="tab-pane container active" id="step5">
+						  <div class="container">
+								<hr/>
+						  		 <div class="card">
+								  <div class="card-header">
+								    HOST
+								  </div>
+								  <div class="card-body">
+								    <h5 class="card-title">Information</h5>
+										<table class="table table-striped table-bordered"  id="listHost">
+											<thead>
+												<tr>
+													<th># ID</th>
+													<th>Name</th>
+													<th>IP HOST</th>
+													<th>IP VM (OPTIONAL)</th>
+													<th>DAL</th>
+													<th>Actions</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr th:if="${hostItem != null}" th:object="${hostItem}">
+												     <td class="align-middle" th:text="${hostItem.hostId}"></td>
+												     <td class="align-middle" th:text="${hostItem.name}"></td>
+													 <td class="align-middle" th:text="${hostItem.ipHost}"></td>
+													 <td class="align-middle" th:text="${hostItem.ipVm}"></td>
+												     <td class="align-middle" th:text="${hostItem.dal}"></td>							    							     
+												     <td>
+														<button type="button" data-toggle="modal" data-target="#editHost" th:data-hostid="${hostItem.hostId}" th:data-hostname="${hostItem.name}"
+														th:data-hostip="${hostItem.ipHost}" th:data-vmip="${hostItem.ipVm}" th:data-hostdal="${hostItem.dal}"  class="btn btn-default">
+															<i class="fa fa-pencil"></i>
+														</button>
+																						
+														<button type="button" data-toggle="modal" data-target="#returnHost" th:data-hostiddelete="${hostItem.hostId}" class="btn btn-danger">
+															<i class="fa fa-trash"></i>
+														</button>
+														
+													</td>
+																													
+												</tr>
+											</tbody>
+										</table>								    
+								    <a href="#" th:if="${hostItem == null}" data-toggle="modal" data-target="#addHost" class="btn btn-primary">Add Host</a>
+								  </div>
+								</div>
+								<hr/>
+								
+						  		 <div class="card">
+								  <div class="card-header">
+								    KVM
+								  </div>
+								  <div class="card-body">
+								    <h5 class="card-title">Information</h5>
+								    
+										<table class="table table-striped table-bordered"  id="listKvm">
+											<thead>
+												<tr>
+													<th># ID</th>
+													<th>Name</th>
+													<th>IP</th>
+													<th>KVM PORT</th>
+													<th>Actions</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr th:if="${kvmItem != null}" th:object="${kvmItem}">
+													<td class="align-middle" th:text="${kvmItem.kvmId}"></td>
+													<td class="align-middle" th:text="${kvmItem.name}"></td>
+													<td class="align-middle" th:text="${kvmItem.ip}"></td>
+													<td class="align-middle" th:text="${kvmItem.port}"></td>							    							     
+													<td>
+														<button type="button" data-toggle="modal" data-target="#editKvm" th:data-kvmid="${kvmItem.kvmId}" th:data-kvmport="${kvmItem.port}" 
+														th:data-kvmname="${kvmItem.name}" th:data-kvmip="${kvmItem.ip}"  class="btn btn-default">
+															<i class="fa fa-pencil"></i>
+														</button>
+													   
+													   
+													   <button type="button" data-toggle="modal" data-target="#returnKvm" th:data-kvmiddelete="${kvmItem.kvmId}" class="btn btn-danger" sec:authorize="hasRole('ROLE_INVENTORY')">
+														   <i class="fa fa-trash"></i>
+													   </button>
+													   
+												   </td>
+																												   
+											   </tr>
+											</tbody>
+										</table>								    
+								    <a href="#"  th:if="${kvmItem == null}" data-toggle="modal" data-target="#addKvm" class="btn btn-primary">Add KVM</a>
+								  </div>
+								</div>
+								
+								
+								<hr/>
+						  		 <div class="card">
+								  <div class="card-header">
+								    PDU
+								  </div>
+								  <div class="card-body">
+								    <h5 class="card-title">Information</h5>
+										<table class="table table-striped table-bordered"  id="listPdu">
+											<thead>
+												<tr>
+													<th># ID</th>
+													<th>Name</th>
+													<th>IP</th>
+													<th>PORT</th>
+													<th>Actions</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr th:if="${pduItem != null}" th:object="${pduItem}">
+													<td class="align-middle" th:text="${pduItem.pduId}"></td>
+													<td class="align-middle" th:text="${pduItem.name}"></td>
+													<td class="align-middle" th:text="${pduItem.ip}"></td>
+													<td class="align-middle" th:text="${pduItem.port}"></td>							    							     
+													<td>
+														<button type="button" data-toggle="modal" data-target="#editPdu" th:data-pduid="${pduItem.pduId}" th:data-pduport="${pduItem.port}" th:data-pduname="${pduItem.name}"
+														th:data-pduip="${pduItem.ip}"  class="btn btn-default">
+															<i class="fa fa-pencil"></i>
+														</button>
+													   					   
+													   <button type="button" data-toggle="modal" data-target="#returnPdu" th:data-pduiddelete="${pduItem.pduId}" class="btn btn-danger">
+														   <i class="fa fa-trash"></i>
+													   </button>
+													   
+												   </td>
+																												   
+											   </tr>
+											</tbody>
+										</table>
+								    <button href="#" th:if="${pduItem == null}" data-toggle="modal" data-target="#addPdu" class="btn btn-primary">Add PDU</button>
+								  </div>
+								</div>																						  
+						    	<hr/>
+						  </div>
+
+					  </div>
+									  					  
+					  
+					</div>
+					
+					<!-- End Panes -->
+					
+				</div>
+			</div>
+			<!-- End row 2.5 -->
+			
+
+			<!-- start of Row 4 for Messaging Alerts  -->
+			<div class="row">
+						  
+				<div class="col-md-12">
+						 <!-- The Modal -->
+					 <div class="modal fade" id="modalMessaging">
+							    <div class="modal-dialog modal-dialog-centered">
+							      <div class="modal-content">
+							      
+							        <!-- Modal Header -->
+							        <div class="modal-header">
+							          <h4 class="modal-title"></h4>
+							          <button type="button" class="close" data-dismiss="modal">&times;</button>
+							        </div>
+							        
+							        <!-- Modal body -->
+							        <div class="modal-body">
+							          <p id="message"></p>
+							        </div>
+							        
+							        <!-- Modal footer -->
+							        <div class="modal-footer">
+							          
+							        </div>
+							        
+							      </div>
+							    </div>
+					</div>							 
+				</div>
+			
+			</div>
+			
+			<!-- End of Row 4  -->	
+			
+			
+ 			<!-- Modal for  Edit Host-->
+  			
+			 <div class="row">
+  			
+				<!-- Modal -->
+				  <div class="modal fade" id="editHost" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+					<div class="modal-dialog" role="document">
+					  <div class="modal-content">
+						<div class="modal-header">
+						  <h5 class="modal-title" id="exampleModalLabel">Host information</h5>
+						  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						  </button>
+						</div>
+						<div class="modal-body">
+						  
+							<form class="needs-validation" th:action="@{/admin/editHost}" th:object="${host}" method="post" novalidate>
+						  
+								<div class="form-group">
+								  <label for="recipient-name" class="col-form-label">ID HOST</label>
+								  <input type="text" class="form-control" id="hostId" name="hostId" required readonly>
+								  <div class="invalid-feedback">
+									Please write a valid Id Host.
+								  </div>
+								</div>
+
+
+								<div class="form-group">
+									<label for="recipient-name" class="col-form-label">NAME HOST</label>
+									<input type="text" class="form-control" id="hostName" name="name" required>
+									<div class="invalid-feedback">
+									  Please write a valid Name.
+									</div>
+								</div>								
+
+
+								<div class="form-group">
+									<label for="recipient-name" class="col-form-label">IP HOST</label>
+									<input type="text" class="form-control" id="hostIp" name="ipHost" required>
+									<div class="invalid-feedback">
+									  Please write a valid IP Host.
+									</div>
+								</div>
+
+								<div class="form-group">
+									<label for="recipient-name" class="col-form-label">IP VM (REQUIRED IF IT IS VMWARE)</label>
+									<input type="text" class="form-control" id="vmIp" name="ipVm">
+									<div class="invalid-feedback">
+									  Please write a valid IP VM.
+									</div>
+								</div>								
+
+								<div class="form-group">
+									<label for="recipient-name" class="col-form-label">DAL</label>
+									<select class="custom-select" id="hostDal" name="dal" required>
+										<option value="">-- Dal installed --</option>
+										<option value="false">No, It is not installed</option>
+										<option value="true">Yes, It is installed</option>
+									</select>
+									<div class="invalid-feedback">
+									  Please write a valid DAL value.
+									</div>
+								</div>
+								
+								
+								<div class="form-group"  th:object="${platform}">
+									<label for="recipient-name" class="col-form-label"></label>
+									<input type="hidden" class="form-control" th:value="${platform.platformId}" name="platform.platformId" required>
+									<div class="invalid-feedback">
+									  Please write a valid Id Platform.
+									</div>
+								</div>
+
+								  <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>									        										        	
+								  <button type="submit" class="btn btn-primary">Save information</button>
+							  </form>
+
+						</div>
+						<div class="modal-footer">
+						  
+						</div>
+					  </div>
+					</div>
+				  </div>
+			</div>
+			
+			<!-- End Modal for Edit Host -->			
+
+			<!-- Modal for  Edit KVM-->
+  			
+			<div class="row">
+  			
+				<!-- Modal -->
+				  <div class="modal fade" id="editKvm" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+					<div class="modal-dialog" role="document">
+					  <div class="modal-content">
+						<div class="modal-header">
+						  <h5 class="modal-title" id="exampleModalLabel">KVM information</h5>
+						  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						  </button>
+						</div>
+						<div class="modal-body">
+						  
+							<form class="needs-validation" th:action="@{/admin/editKvm}" th:object="${kvm}" method="post" novalidate>
+						  
+								<div class="form-group">
+								  <label for="recipient-name" class="col-form-label">ID KVM</label>
+								  <input type="text" class="form-control" id="kvmId" name="kvmId" required readonly>
+								  <div class="invalid-feedback">
+									Please write a valid Id Host.
+								  </div>
+								</div>
+
+
+								<div class="form-group">
+									<label for="recipient-name" class="col-form-label">Name KVM</label>
+									<input type="text" class="form-control" id="kvmName" name="name" required>
+									<div class="invalid-feedback">
+									  Please write a valid Name.
+									</div>
+								</div>								
+
+								<div class="form-group">
+									<label for="recipient-name" class="col-form-label">KVM PORT</label>
+									<input type="number" class="form-control" id="kvmPort" name="port" min="1" max="16" required>
+									<div class="invalid-feedback">
+									  Please write a valid Port.
+									</div>
+								</div>
+
+								<div class="form-group">
+									<label for="recipient-name" class="col-form-label">IP KVM</label>
+									<input type="text" class="form-control" id="kvmIp" name="ip" required>
+									<div class="invalid-feedback">
+									  Please write a valid IP Kvm.
+									</div>
+								</div>
+								
+								
+								<div class="form-group"  th:object="${platform}">
+									<label for="recipient-name" class="col-form-label"></label>
+									<input type="hidden" class="form-control" th:value="${platform.platformId}" name="platform.platformId" required>
+									<div class="invalid-feedback">
+									  Please write a valid Id Platform.
+									</div>
+								</div>
+
+								  <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>									        										        	
+								  <button type="submit" class="btn btn-primary">Save information</button>
+							  </form>
+
+						</div>
+						<div class="modal-footer">
+						  
+						</div>
+					  </div>
+					</div>
+				  </div>
+			</div>
+			
+			<!-- End Modal for Edit KVM -->
+
+
+			<!-- Modal for  Edit PDU-->
+  			
+			<div class="row">
+  			
+				<!-- Modal -->
+				  <div class="modal fade" id="editPdu" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+					<div class="modal-dialog" role="document">
+					  <div class="modal-content">
+						<div class="modal-header">
+						  <h5 class="modal-title" id="exampleModalLabel">PDU information</h5>
+						  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						  </button>
+						</div>
+						<div class="modal-body">
+						  
+							<form class="needs-validation" th:action="@{/admin/editPdu}" th:object="${pdu}" method="post" novalidate>
+						  
+								<div class="form-group">
+								  <label for="recipient-name" class="col-form-label">ID PDU</label>
+								  <input type="text" class="form-control" id="pduId" name="pduId" required readonly>
+								  <div class="invalid-feedback">
+									Please write a valid Id Host.
+								  </div>
+								</div>
+
+
+								<div class="form-group">
+									<label for="recipient-name" class="col-form-label">Name PDU</label>
+									<input type="text" class="form-control" id="pduName" name="name" required>
+									<div class="invalid-feedback">
+									  Please write a valid Name.
+									</div>
+								</div>								
+
+
+								<div class="form-group">
+									<label for="recipient-name" class="col-form-label">IP PDU</label>
+									<input type="text" class="form-control" id="pduIp" name="ip" required>
+									<div class="invalid-feedback">
+									  Please write a valid IP Kvm.
+									</div>
+								</div>
+								
+								
+								<div class="form-group"  th:object="${platform}">
+									<label for="recipient-name" class="col-form-label"></label>
+									<input type="hidden" class="form-control" th:value="${platform.platformId}" name="platform.platformId" required>
+									<div class="invalid-feedback">
+									  Please write a valid Id Platform.
+									</div>
+								</div>
+
+								  <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>									        										        	
+								  <button type="submit" class="btn btn-primary">Save information</button>
+							  </form>
+
+						</div>
+						<div class="modal-footer">
+						  
+						</div>
+					  </div>
+					</div>
+				  </div>
+			</div>
+			
+			<!-- End Modal for Edit PDU -->	
+			
+			
+			<!-- Modal for  Return Host-->
+			
+			<div class="row">
+			
+				<!-- Modal -->
+					<div class="modal fade" id="returnHost" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+						<div class="modal-dialog" role="document">
+						<div class="modal-content">
+							<div class="modal-header">
+							<h5 class="modal-title" id="exampleModalLabel">Return Host</h5>
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+							</div>
+							<div class="modal-body">
+							<h1 sec:authentication="name"></h1> <h6 align="center">Are you Sure to return this Host?</h6>
+							</div>
+							<div class="modal-footer">
+							
+							<form class="needs-validation" th:action="@{/admin/returnHost}" method="post" novalidate>
+							
+								<input type="hidden" class="form-control" id="hostIdReturn" name="hostId" required>
+
+								<input type="hidden" th:value="${platform.platformId}" class="form-control" id="platformId" name="platformId" required>
+								
+								<button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>									        										        	
+								<button type="submit" class="btn btn-primary">Yes, I'm sure</button>
+							</form>
+							</div>
+						</div>
+						</div>
+					</div>
+			</div>
+			
+			<!-- End Modal for Return Host -->	
+
+			<!-- Modal for  Return KVM-->
+
+			<div class="row">
+
+				<!-- Modal -->
+					<div class="modal fade" id="returnKvm" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+						<div class="modal-dialog" role="document">
+						<div class="modal-content">
+							<div class="modal-header">
+							<h5 class="modal-title" id="exampleModalLabel">Return KVM</h5>
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+							</div>
+							<div class="modal-body">
+							<h1 sec:authentication="name"></h1> <h6 align="center">Are you Sure to return this KVM?</h6>
+							</div>
+							<div class="modal-footer">
+
+							<form class="needs-validation" th:action="@{/admin/returnKvm}" method="post" novalidate>
+
+								<div class="form-group">
+								<label for="recipient-name" class="col-form-label"></label>
+								<input type="hidden" class="form-control" id="kvmIdReturn" name="kvmId" required>
+								<div class="invalid-feedback">
+									Please write a valid Id KVM.
+								</div>
+								</div>
+								<button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>									        										        	
+								<button type="submit" class="btn btn-primary">Yes, I'm sure</button>
+							</form>
+							</div>
+						</div>
+						</div>
+					</div>
+			</div>
+
+			<!-- End Modal for Return KVM -->
+
+			<!-- Modal for  Return PDU-->
+
+			<div class="row">
+
+				<!-- Modal -->
+					<div class="modal fade" id="returnPdu" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+						<div class="modal-dialog" role="document">
+						<div class="modal-content">
+							<div class="modal-header">
+							<h5 class="modal-title" id="exampleModalLabel">Return PDU</h5>
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+							</div>
+							<div class="modal-body">
+								<h1 sec:authentication="name"></h1> <h6 align="center">Are you Sure to return this PDU?</h6>
+							</div>
+							<div class="modal-footer">
+
+							<form class="needs-validation" th:action="@{/admin/returnPdu}" method="post" novalidate>
+
+								<div class="form-group">
+								<label for="recipient-name" class="col-form-label"></label>
+								<input type="hidden" class="form-control" id="pduIdReturn" name="pduId" required>
+								<div class="invalid-feedback">
+									Please write a valid Id PDU.
+								</div>
+								</div>
+								<button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>									        										        	
+								<button type="submit" class="btn btn-primary">Yes, I'm sure</button>
+							</form>
+							</div>
+						</div>
+						</div>
+					</div>
+			</div>
+
+			<!-- End Modal for Return PDU -->			
+			
+			<!-- Modal for  ADD PDU -->
+
+			<div class="row">
+
+				<!-- Modal -->
+					<div class="modal fade" id="addPdu" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+						<div class="modal-dialog" role="document">
+						<div class="modal-content">
+							<div class="modal-header">
+							<h5 class="modal-title" id="exampleModalLabel">PDU Information</h5>
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+							</div>
+							<div class="modal-body">
+																
+								<form class="needs-validation" th:action="@{/admin/editPdu}" th:object="${pdu}" method="post" novalidate>
+
+									<div class="form-group">
+
+										<input type="hidden" th:value="${platform.platformId}" class="form-control" name="platform.platformId" required>
+	
+									</div>									
+						  	
+	
+									<div class="form-group">
+										<label for="recipient-name" class="col-form-label">Name PDU</label>
+										<input type="text" class="form-control" id="pduName" name="name" required>
+										<div class="invalid-feedback">
+										  Please write a valid Name.
+										</div>
+									</div>								
+	
+									<div class="form-group">
+										<label for="recipient-name" class="col-form-label">IP PDU</label>
+										<input type="text" class="form-control" id="pduIp" name="ip" required>
+										<div class="invalid-feedback">
+										  Please write a valid IP Kvm.
+										</div>
+									</div>
+
+									<div class="form-group">
+										<label for="recipient-name" class="col-form-label">PDU PORT</label>
+										<select class="custom-select" id="pduPort" name="port" required>
+											<option value="">-- Port PDU --</option>
+											<option value="1">PORT 1</option>
+											<option value="2">PORT 2</option>
+											<option value="3">PORT 3</option>
+											<option value="4">PORT 4</option>
+											<option value="5">PORT 5</option>
+											<option value="6">PORT 6</option>
+											<option value="7">PORT 7</option>
+											<option value="8">PORT 8</option>
+											<option value="9">PORT 9</option>
+											<option value="10">PORT 10</option>
+											<option value="11">PORT 11</option>
+											<option value="12">PORT 12</option>
+											<option value="13">PORT 13</option>
+											<option value="14">PORT 14</option>
+											<option value="15">PORT 15</option>
+											<option value="16">PORT 16</option>
+											<option value="17">PORT 17</option>
+											<option value="19">PORT 18</option>
+											<option value="19">PORT 19</option>
+											<option value="20">PORT 20</option>
+											<option value="21">PORT 21</option>
+											<option value="22">PORT 22</option>
+											<option value="23">PORT 23</option>
+											<option value="24">PORT 24</option>
+										</select>
+										<div class="invalid-feedback">
+										  Please write a valid Port.
+										</div>
+									</div>									
+									
+									
+									  <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>									        										        	
+									  <button type="submit" class="btn btn-primary">Save information</button>
+
+								  </form>								
+
+							</div>
+							<div class="modal-footer">
+							</div>
+						</div>
+						</div>
+					</div>
+			</div>
+
+			<!-- End Modal for ADD PDU -->
+
+			<!-- Modal for ADD HOST -->
+
+			<div class="row">
+
+				<!-- Modal -->
+					<div class="modal fade" id="addHost" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+						<div class="modal-dialog" role="document">
+						<div class="modal-content">
+							<div class="modal-header">
+							<h5 class="modal-title" id="exampleModalLabel">INSERT HOST</h5>
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+							</div>
+							<div class="modal-body">
+
+								<form class="needs-validation" th:action="@{/admin/addHostToPlatform}" th:object="${host}" method="post" novalidate>
+						  	
+									<div class="form-group">
+										<label for="recipient-name" class="col-form-label">NAME HOST</label>
+										<input type="text" class="form-control" id="hostName" name="name" required>
+										<div class="invalid-feedback">
+										  Please write a valid Name.
+										</div>
+									</div>								
+	
+	
+									<div class="form-group">
+										<label for="recipient-name" class="col-form-label">IP HOST</label>
+										<input type="text" class="form-control" id="hostIp" name="ipHost" required>
+										<div class="invalid-feedback">
+										  Please write a valid IP Host.
+										</div>
+									</div>
+	
+									<div class="form-group">
+										<label for="recipient-name" class="col-form-label">IP VM (REQUIRED IF IT IS VMWARE)</label>
+										<input type="text" class="form-control" id="vmIp" name="ipVm">
+										<div class="invalid-feedback">
+										  Please write a valid IP VM.
+										</div>
+									</div>								
+	
+									<div class="form-group">
+										<label for="recipient-name" class="col-form-label">DAL</label>
+										<select class="custom-select" id="hostDal" name="dal" required>
+											<option value="">-- Dal installed --</option>
+											<option value="false">No, It is not installed</option>
+											<option value="true">Yes, It is installed</option>
+										  </select>
+										<div class="invalid-feedback">
+										  Please write a valid DAL value.
+										</div>
+									</div>
+									
+													
+									<input type="hidden" class="form-control" th:value="${platform.platformId}" id="platformId" name="platform.platformId">
+
+	
+									<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>									        										        	
+									<button type="submit" class="btn btn-primary">Save information</button>
+
+								  </form>								
+
+							</div>
+							<div class="modal-footer">
+							</div>
+						</div>
+						</div>
+					</div>
+			</div>
+
+			<!-- End Modal for ADD HOST -->	
+			
+			<!-- Modal for ADD KVM -->
+
+			<div class="row">
+
+				<!-- Modal -->
+					<div class="modal fade" id="addKvm" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+						<div class="modal-dialog" role="document">
+						<div class="modal-content">
+							<div class="modal-header">
+							<h5 class="modal-title" id="exampleModalLabel">Choose PDU</h5>
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+							</div>
+							<div class="modal-body">
+	
+								
+								<form class="needs-validation" th:action="@{/admin/editKvm}" th:object="${kvm}" method="post" novalidate>
+
+									<div class="form-group">
+
+										<input type="hidden" th:value="${platform.platformId}" class="form-control" name="platform.platformId" required>
+
+									</div>									
+						  
+		
+									<div class="form-group">
+										<label for="recipient-name" class="col-form-label">Name KVM</label>
+										<input type="text" class="form-control" id="kvmName" name="name" required>
+										<div class="invalid-feedback">
+										  Please write a valid Name.
+										</div>
+									</div>								
+	
+									<div class="form-group">
+										<label for="recipient-name" class="col-form-label">KVM PORT</label>
+										<select class="custom-select" id="kvmPort" name="port" required>
+											<option value="">-- Port KVM --</option>
+											<option value="1">PORT 1</option>
+											<option value="2">PORT 2</option>
+											<option value="3">PORT 3</option>
+											<option value="4">PORT 4</option>
+											<option value="5">PORT 5</option>
+											<option value="6">PORT 6</option>
+											<option value="7">PORT 7</option>
+											<option value="8">PORT 8</option>
+											<option value="9">PORT 9</option>
+											<option value="10">PORT 10</option>
+											<option value="11">PORT 11</option>
+											<option value="12">PORT 12</option>
+											<option value="13">PORT 13</option>
+											<option value="14">PORT 14</option>
+											<option value="15">PORT 15</option>
+											<option value="16">PORT 16</option>
+										</select>
+										<div class="invalid-feedback">
+										  Please write a valid Port.
+										</div>
+									</div>
+	
+									<div class="form-group">
+										<label for="recipient-name" class="col-form-label">IP KVM</label>
+										<input type="text" class="form-control" id="kvmIp" name="ip" required>
+										<div class="invalid-feedback">
+										  Please write a valid IP Kvm.
+										</div>
+									</div>
+									
+										
+									  <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>									        										        	
+									  <button type="submit" class="btn btn-primary">Save information</button>
+								  </form>								
+
+							</div>
+							<div class="modal-footer">
+							</div>
+						</div>
+						</div>
+					</div>
+			</div>
+
+			<!-- End Modal for ADD KVM -->				
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script th:src="@{/js/jquery.js}"></script>
+    <script th:src="@{/js/jquery.dataTables.min.js}"></script>
+    <script th:src="@{/js/dataTables.bootstrap4.min.js}"></script>
+    <script th:src="@{/js/popper.js}"></script>
+    <script th:src="@{/js/bootstrap.js}"></script>
+  
+    
+    <script th:inline="javascript">
+    
+	(function() {
+		  'use strict';
+		  window.addEventListener('load', function() {
+		    // Fetch all the forms we want to apply custom Bootstrap validation styles to
+		    var forms = document.getElementsByClassName('needs-validation');
+		    // Loop over them and prevent submission
+		    var validation = Array.prototype.filter.call(forms, function(form) {
+		      form.addEventListener('submit', function(event) {
+		        if (form.checkValidity() === false) {
+		          event.preventDefault();
+		          event.stopPropagation();
+		        }
+		        form.classList.add('was-validated');
+		      }, false);
+		    });
+		  }, false);
+	})();
+    
+    $(document).ready(function(){
+
+			/*[# th:if="${success == 'hostAdded'}"]*/
+			
+				$("#modalMessaging").modal('toggle');
+			    $("#message").text("HOST have been Added successfully");
+			
+			/*[/]*/		
+
+			/*[# th:if="${success == 'kvmAdded'}"]*/
+			
+			$("#modalMessaging").modal('toggle');
+			    $("#message").text("KVM have been Added successfully");
+			
+			/*[/]*/			
+
+			/*[# th:if="${success == 'pduAdded'}"]*/
+			
+				$("#modalMessaging").modal('toggle');
+			    $("#message").text("PDU have been Added successfully");
+			
+			/*[/]*/
+
+			/*[# th:if="${success == 'updatedKvm'}"]*/
+			
+				$("#modalMessaging").modal('toggle');
+			    $("#message").text("KVM have been updated successfully");
+			
+			/*[/]*/
+
+			/*[# th:if="${success == 'updatedPdu'}"]*/
+			
+				$("#modalMessaging").modal('toggle');
+			    $("#message").text("PDU have been updated successfully");
+			
+			/*[/]*/
+
+			/*[# th:if="${success == 'updatedHost'}"]*/
+			
+				$("#modalMessaging").modal('toggle');
+			    $("#message").text("HOST have been updated successfully");
+			
+			/*[/]*/						
+		
+		$('#editHost').on('show.bs.modal', function (event) {
+			  
+			  var button = $(event.relatedTarget);// Button that triggered the modal
+
+			  var hostid =  button.data('hostid');
+			  var hostname = button.data('hostname');
+			  var hostip = button.data('hostip');
+			  var vmip = button.data('vmip');
+			  var hostdal = button.data('hostdal');
+			  // Extract info from data-* attributes
+			  // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+			  // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+
+			  $("#hostId").val(hostid);
+			  $("#hostName").val(hostname);
+			  $("#hostIp").val(hostip);
+			  $("#vmIp").val(vmip);
+
+			  if(hostdal == true){
+				$("#hostDal").val("true")
+			  }else{
+				$("#hostDal").val("false")
+			  }
+					  		 	  		  
+		  });			
+
+		  $('#editKvm').on('show.bs.modal', function (event) {
+			  
+			  var button = $(event.relatedTarget);// Button that triggered the modal
+
+			  var kvmid =  button.data('kvmid');
+			  var kvmname = button.data('kvmname');
+			  var kvmip = button.data('kvmip');
+			  var kvmport = button.data('kvmport');
+
+			  // Extract info from data-* attributes
+			  // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+			  // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+
+			  $("#kvmId").val(kvmid);
+			  $("#kvmName").val(kvmname);
+			  $("#kvmIp").val(kvmip);
+			  $("#kvmPort").val(kvmport);
+
+					  		 	  		  
+		  });
+
+		  $('#editPdu').on('show.bs.modal', function (event) {
+			  
+			  var button = $(event.relatedTarget);// Button that triggered the modal
+
+			  var pduid =  button.data('pduid');
+			  var pduname = button.data('pduname');
+			  var pduip = button.data('pduip');
+			  var pduport = button.data('pduport');
+
+			  // Extract info from data-* attributes
+			  // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+			  // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+
+			  $("#pduId").val(pduid);
+			  $("#pduName").val(pduname);
+			  $("#pduIp").val(pduip);
+			  $("#pduPort").val(pduport);
+
+					  		 	  		  
+		  });
+
+
+		  $('#returnHost').on('show.bs.modal', function (event) {
+			  
+			  var button = $(event.relatedTarget);// Button that triggered the modal
+
+			  var hostiddelete =  button.data('hostiddelete');
+
+
+			  // Extract info from data-* attributes
+			  // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+			  // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+
+			  $("#hostIdReturn").val(hostiddelete);
+
+					  		 	  		  
+		  });
+
+		  $('#returnKvm').on('show.bs.modal', function (event) {
+			  
+			  var button = $(event.relatedTarget);// Button that triggered the modal
+			  var kvmiddelete =  button.data('kvmiddelete');
+			  // Extract info from data-* attributes
+			  // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+			  // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+			  $("#kvmIdReturn").val(kvmiddelete);
+					  		 	  		  
+		  });
+
+		  $('#returnPdu').on('show.bs.modal', function (event) {
+			  
+			  var button = $(event.relatedTarget);// Button that triggered the modal
+			  var pduiddelete =  button.data('pduiddelete');
+			  // Extract info from data-* attributes
+			  // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+			  // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+			  $("#pduIdReturn").val(pduiddelete);
+					  		 	  		  
+		  });		  
+				
+	});
+    
+	
+    </script>
+    	
+</body>
+</html>

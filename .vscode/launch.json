@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-LtrTeamApplication<LTR_TEAM>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "console": "internalConsole",
+            "mainClass": "com.LTR.LtrTeamApplication",
+            "projectName": "LTR_TEAM",
+            "args": ""
+        }
+    ]
+}
